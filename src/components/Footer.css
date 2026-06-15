@@ -1,0 +1,115 @@
+.footer {
+  border-top: 1px solid var(--color-border);
+  background: var(--color-ink);
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.footer__grid {
+  display: grid;
+  gap: 3rem;
+  padding-block: 4rem;
+}
+
+.footer__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.footer__logo {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 1rem;
+  object-fit: cover;
+}
+
+.footer__brand-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-white);
+}
+
+.footer__brand-subtitle {
+  margin: 0.2rem 0 0;
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.footer__copy {
+  max-width: 32rem;
+  margin: 1.25rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.9;
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.footer__heading {
+  margin: 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.46);
+}
+
+.footer__list {
+  display: grid;
+  gap: 0.9rem;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.95rem;
+}
+
+.footer__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+
+.footer__link {
+  transition: color var(--transition-base);
+}
+
+.footer__link:hover {
+  color: var(--color-brand-200);
+}
+
+.footer__icon {
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.15rem;
+  color: var(--color-brand-300);
+}
+
+.footer__socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.footer__social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  padding: 0.65rem 1rem;
+  font-size: 0.95rem;
+  transition:
+    border-color var(--transition-base),
+    color var(--transition-base);
+}
+
+.footer__social-link:hover {
+  border-color: var(--color-brand-400);
+  color: var(--color-brand-200);
+}
+
+@media (min-width: 768px) {
+  .footer__grid {
+    grid-template-columns: 1.2fr 0.8fr 0.8fr;
+  }
+}
