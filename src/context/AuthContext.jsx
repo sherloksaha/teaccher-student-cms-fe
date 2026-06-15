@@ -2,13 +2,13 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { formatLocationTitle, normalizeStoredLocation } from '../utils/locationData';
-import apiClient from '../../lib/apiClient';
+import { api } from '../../lib/apiClient';
+import { createAccountAction, loginAction, logoutAction } from '../../app/actions/authActions';
 
 const AuthContext = createContext(null);
 
 const CURRENT_USER_KEY = 'offcampus-current-user';
 const LEGACY_CURRENT_STUDENT_KEY = 'offcampus-current-student';
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
 
 function readStorage(key, fallback) {
   try {
@@ -53,23 +53,16 @@ function normalizeAccount(account) {
   };
 }
 
-async function requestJson(path, options = {}) {
-  const method = (options.method || 'GET').toLowerCase();
-  const url = `${API_BASE_URL}${path}`;
-
-  try {
-    const res = await apiClient.request({
-      url,
-      method,
-      data: options.body ? JSON.parse(options.body) : undefined,
-      headers: options.headers || {},
-    });
-
-    return res.data;
-  } catch (err) {
-    const message = err?.response?.data?.message || err.message || 'Request failed.';
-    throw new Error(message);
+function handleAuthResult(result) {
+  if (!result.ok) {
+    throw new Error(result.message || 'Request failed.');
   }
+
+  if (result.token) {
+    api.setToken(result.token);
+  }
+
+  return result;
 }
 
 export function AuthProvider({ children }) {
@@ -90,19 +83,13 @@ export function AuthProvider({ children }) {
   }, []);
 
   const signup = async (signupData) => {
-    const data = await requestJson('/api/auth/signup', {
-      method: 'POST',
-      body: JSON.stringify(signupData),
-    });
+    const data = handleAuthResult(await createAccountAction(signupData));
 
     return normalizeAccount(data.account);
   };
 
   const login = async ({ email, password, role }) => {
-    const data = await requestJson('/api/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, password, role }),
-    });
+    const data = handleAuthResult(await loginAction({ email, password, role }));
 
     const normalizedAccount = normalizeAccount(data.account);
     writeStorage(CURRENT_USER_KEY, normalizedAccount);
@@ -114,6 +101,8 @@ export function AuthProvider({ children }) {
   const logout = () => {
     window.localStorage.removeItem(CURRENT_USER_KEY);
     window.localStorage.removeItem(LEGACY_CURRENT_STUDENT_KEY);
+    api.clearToken();
+    void logoutAction();
     setCurrentUser(null);
   };
 
