@@ -3,7 +3,8 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { formatLocationTitle, normalizeStoredLocation } from '../utils/locationData';
 import { api } from '../../lib/apiClient';
-import { createAccountAction, loginAction, logoutAction } from '../../app/actions/authActions';
+import { registerUser } from '../../lib/authApi';
+import { loginAction, logoutAction } from '../../app/actions/authActions';
 
 const AuthContext = createContext(null);
 
@@ -83,9 +84,18 @@ export function AuthProvider({ children }) {
   }, []);
 
   const signup = async (signupData) => {
-    const data = handleAuthResult(await createAccountAction(signupData));
+    const data = await registerUser(signupData);
+    const account = data.account || data.user || data.data?.account || data.data?.user || data.data || data;
 
-    return normalizeAccount(data.account);
+    return normalizeAccount({
+      ...signupData,
+      ...account,
+      name:
+        account.name ||
+        [account.firstName, account.lastName].filter(Boolean).join(' ') ||
+        signupData.name,
+      role: account.role || signupData.role,
+    });
   };
 
   const login = async ({ email, password, role }) => {
